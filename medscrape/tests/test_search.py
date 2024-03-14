@@ -6,13 +6,12 @@ from medscrape.inference import query_llm
 
 
 # The previously prepared UserQueries object
-tld = "https://mdschool.tcu.edu/"
+tld = "https://med.stanford.edu"
 questions = [
-    "Is there a dedicated orthopaedics clerkship mentioned for this Medical School?",
-    "Are there any dedicated orthopaedics electives mentioned for this Medical School?",
-    "What is the dedicated musculoskeletal curriculum for this Medical School?",
+    "What are the core values for this Medical School?",
+    "What research has this med school performed Medical School?",
+    "What is the curriculum for first year students at this Medical School?",
     "Does the Medical School have an emphasis on primary care?",
-    "Is there a dedicated family medicine clerkship mentioned for this Medical School?",
 ]
 user_queries = UserQueries(tld=tld, questions=questions)
 
