@@ -1,6 +1,6 @@
 # Medscrape
 
-Medscrape is an open source Python project that takes in URLs, scrapes an entire website, uses the unstructured library to process the data, stores and embeds it using serverless instance of lanceDB, and then uses the instructor library to make API calls to OpenAI for inference over the data.
+Medscrape is an open source Python project that takes in a URL, scrapes an entire website, uses the unstructured library to process the data, stores and embeds it using serverless instance of lanceDB, and then uses the instructor library to make API calls to OpenAI for inference over the data.
 
 ## Features
 
