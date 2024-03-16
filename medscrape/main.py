@@ -15,6 +15,7 @@ from .enumeration import get_all_website_links
 from .retrieval import lance_search
 
 import logging
+import json  # Add this import at the top
 
 logger = logging.getLogger("medscrape")
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +59,9 @@ async def make_query_call(query: UserQueries):
     print(f"Making query call with LLM over questions: {query.questions}")
     answers = await lance_search(query)
     formatted_answers = [{"question": q, "answer": a.answer} for q, a in zip(query.questions, answers)]
-    return {"message": "Inference call made successfully", "data": formatted_answers}
+    response = {"message": "Inference call made successfully", "data": formatted_answers}
+    print(json.dumps(response, indent=4))  # Pretty print the response
+    return response
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):

@@ -5,16 +5,17 @@ services:
     build: .
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/app/data  
     depends_on:
       - redis
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
-      REDIS_PASSWORD: ${REDIS_PASSWORD}  
-      FASTAPI_HOST: 0.0.0.0
-      FASTAPI_PORT: 8000
-      OPENAI_API_KEY: ${OPENAI_API_KEY}  
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          cpus: '6'
 
   redis:
     image: "redis:alpine"

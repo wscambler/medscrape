@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 
 # Initialize Redis client (adjust parameters as needed for your Redis setup)
-redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+redis_client = redis.Redis(host=os.getenv('REDIS_HOST', 'localhost'), port=int(os.getenv('REDIS_PORT', 6379)), db=0, decode_responses=True)
 
 class Website(BaseModel):
     tld: str = Field(..., description="The top-level domain of the website.")

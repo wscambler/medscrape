@@ -43,17 +43,18 @@ Medscrape is an open source Python project that takes in a URL, scrapes an entir
 5. Make sure Redis is running on your machine.
 4. Rename `.env.example` to `.env` and add the correct API keys.
 
-### Using Docker
+### Using Docker Compose
 
 1. Clone the repository and navigate to the directory as above.
-2. Build the Docker image:
+
+2. Ensure you have `docker-compose` installed on your system.
+
+3. Use `docker-compose` to build and run the application:
    ```
-   docker build -t medscrape .
+   docker-compose up --build
    ```
-3. Run the Docker container, ensuring that the `.env` file is correctly set up with the necessary API keys:
-   ```
-   docker run -d -p 8000:8000 medscrape
-   ```
+
+This command builds the Docker image and starts the containers as defined in your `docker-compose.yml` file. Make sure your `.env` file is correctly set up with the necessary API keys before running the command.
 
 ## Usage
 

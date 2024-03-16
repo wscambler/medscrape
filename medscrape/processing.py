@@ -40,7 +40,7 @@ class ExtractedData(LanceModel):
     parent_id: Optional[str] = None
     category_depth: Optional[int] = None
     last_modified: Optional[str] = None
-    link_urls: Optional[List[str]] = Field(None, default_factory=list)
+    link_urls: Optional[List[str]] = Field(default_factory=list)
     link_texts: Optional[List[str]] = Field(default_factory=list)
     is_continuation: Optional[bool] = None
 
