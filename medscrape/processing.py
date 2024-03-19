@@ -5,8 +5,9 @@ import lancedb
 from typing import List, Optional
 from pydantic import Field
 from unstructured.partition.html import partition_html
-from lancedb.embeddings import EmbeddingFunctionRegistry
+from lancedb.embeddings import EmbeddingFunctionRegistry, get_registry
 from lancedb.pydantic import Vector, LanceModel
+from urllib.parse import urlparse
 
 
 logging.basicConfig(level=logging.INFO)
@@ -17,9 +18,12 @@ logger = logging.getLogger(__name__)
 uri = os.getenv("LANCE_DB_URI")
 db = lancedb.connect(uri)
 
-# # use to run OpenAI embeddings 
+# use to run OpenAI embeddings 
+# openai = get_registry().get("openai")
+# embed_func = openai.create(name="text-embedding-3-small")
+
+# use local embeddings
 registry = EmbeddingFunctionRegistry.get_instance()
-# embed_func = registry.get("openai").create(name="text-embedding-3-small")
 embed_func = registry.get("sentence-transformers").create(device="cpu")
 
 #TODO: Waiting on Ollama to release a new version with compatability for OpenAI embeddings call
@@ -45,7 +49,7 @@ class ExtractedData(LanceModel):
     is_continuation: Optional[bool] = None
 
 try:
-    table = db.create_table("ExtractedData", schema=ExtractedData, exist_ok=True)
+    table = db.create_table("ExtractedData", schema=ExtractedData, mode="overwrite", exist_ok=True)
     logger.info("Creating ExtractedData table...")
     table.create_fts_index(["text_chunk", "text_as_html", "parent_id", "url"], replace=True)
 except Exception as e:
@@ -56,6 +60,7 @@ async def process_html_content(url, tld, include_metadata=True, ssl_verify=True,
     if headers is None:
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
     
+    parsed_tld = urlparse(tld).netloc if urlparse(tld).netloc else urlparse(tld).path
     extracted_data_list = []
     try:
         elements = partition_html(
@@ -66,13 +71,15 @@ async def process_html_content(url, tld, include_metadata=True, ssl_verify=True,
             html_assemble_articles=html_assemble_articles, 
             chunking_strategy="by-title",
             max_characters=1000,  
-            new_after_n_chars=500  
+            new_after_n_chars=500,
+            combine_text_under_n_chars=500,
+            overlap=30
         )
         for element in elements:
             metadata = element.metadata.to_dict()
             
             extracted_data = {
-                "tld": tld,
+                "tld": parsed_tld,
                 "url": url,
                 "text_chunk": element.text,
                 "text_as_html": metadata.get("text_as_html", None),
@@ -89,7 +96,7 @@ async def process_html_content(url, tld, include_metadata=True, ssl_verify=True,
         return
     
     if extracted_data_list:
-        logger.info("Adding extracted data to the table...")
+        logger.info(f"Adding extracted data to the table... {extracted_data_list}")
         table.add(extracted_data_list)
 
     

@@ -16,8 +16,7 @@ class Website(BaseModel):
     tld: str = Field(..., description="The top-level domain of the website.")
     urls: List[str] = Field(..., description="The sub pages collected from the website.")
 
-# Adjust concurrency limit based on environment variable or default to 10
-CONCURRENCY_LIMIT = int(os.getenv('CONCURRENCY_LIMIT', 10))
+CONCURRENCY_LIMIT = int(os.getenv('CONCURRENCY_LIMIT', 20))
 
 def is_valid(url):
     """
@@ -43,7 +42,7 @@ def extract_tld(url):
     Extracts the top-level domain (TLD) from the given URL.
     """
     parsed_url = urlparse(url)
-    return parsed_url.netloc
+    return parsed_url.netloc if parsed_url.netloc else parsed_url.path
 
 # Configure basic logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

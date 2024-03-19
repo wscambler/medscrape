@@ -15,7 +15,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '6'
+          cpus: '8'
 
   redis:
     image: "redis:alpine"

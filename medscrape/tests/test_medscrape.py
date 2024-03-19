@@ -5,7 +5,7 @@ from medscrape.models import UserQueries
 
 
 # The previously prepared UserQueries object
-tld = "https://med.stanford.edu"
+tld = "https://mdschool.tcu.edu"
 questions = [
     "What are the core values for this Medical School?",
     "What research has this med school performed Medical School?",

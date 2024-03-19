@@ -12,21 +12,26 @@ class UserQueries(BaseModel):
     questions: List[str] = Field(..., description="The questions to query the language model.")
 
 class ResponseData(LanceModel):
-    tld: str = Field(description="The top-level domain of the website.")
     url: str = Field(description="The URL of the website.")
     text_chunk: str = Field(description="The text chunk text from the DB website.")
 
 class Fact(BaseModel):
-    fact: str = Field(...)
-    substring_quote: List[str] = Field(...)
+    flag: bool = Field(..., description="Whether there was enough information to answer the question.")
+    response: str = Field(..., description="The answer to the question")
+    fact: str = Field(..., description="The fact that was retrieved for the question.")
+    reasoning: str = Field(..., description="The reasoning for why this supports the response.")
+    substring_quote: List[str] = Field(...,description="Keywords supporting the fact")
+    source_url: str = Field(...)
 
     @model_validator(mode="after")
     def validate_sources(self, info: ValidationInfo) -> "Fact":
         if info.context is None:
             return self
-        text_chunks = info.context.get("text_chunk", None)
-        spans = list(self.get_spans(text_chunks))
-        self.substring_quote = [text_chunks[span[0] : span[1]] for span in spans]
+        text_chunks = info.context.get("text_chunks", None)  # Corrected key from "text_chunk" to "text_chunks"
+        if text_chunks is not None:
+            spans = list(self.get_spans(text_chunks))
+            found_quotes = [text_chunks[span[0] : span[1]] for span in spans]
+            self.substring_quote = found_quotes if found_quotes else self.substring_quote
         return self
 
     def get_spans(self, context):
@@ -40,7 +45,7 @@ class Fact(BaseModel):
 class QuestionAnswered(BaseModel):
     tld: str = Field(...)
     question: str = Field(...)
-    answer: List[Fact] = Field(...)
+    answer: List[Fact] = Field(..., description="if not enough information was found to answer the question, the fact will be empty and you should note that there was not enough information to answer the question with factual proof")
 
     @model_validator(mode="after")
     def validate_sources(self) -> "QuestionAnswered":

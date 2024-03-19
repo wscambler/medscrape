@@ -22,6 +22,7 @@ client = instructor.patch(OpenAI())
 
 async def query_llm(question: str, context: str, tld: str) -> QuestionAnswered:
     logger.info(f"Querying LLM with question: {question}")
+    logger.info(f"Using this context: {context}")
     # logger.info(f"API Key being used: {api_key[:4]}...")  # Log the first few characters of the API key for security
     
     response = client.chat.completions.create(
@@ -31,7 +32,9 @@ async def query_llm(question: str, context: str, tld: str) -> QuestionAnswered:
         messages=[
             {
                 "role": "system",
-                "content": "You are a world class medical research algorithm to answer questions with correct and exact citations.",
+                "content": """ You are a world class medical research algorithm designed to answer questions with correct and exact citations.
+                        Provide the most accurate and relevant information for the question provided.
+                        """,
             },
             {"role": "user", "content": f"{context}"},
             {"role": "user", "content": f"Question: {question}"},
