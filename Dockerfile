@@ -10,8 +10,8 @@ RUN pip install --no-cache-dir poetry
 # Copy only the files necessary for installing dependencies to avoid cache invalidation
 COPY pyproject.toml poetry.lock* ./
 
-# Configure Poetry to not create a virtual environment inside the Docker container
-RUN apt-get update && apt-get install -y gcc python3-dev && \
+# Install necessary libraries including OpenGL and GTK for OpenCV and other dependencies
+RUN apt-get update && apt-get install -y gcc python3-dev libgl1-mesa-glx libglib2.0-0 && \
     poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi
 
