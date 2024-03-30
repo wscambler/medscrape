@@ -29,7 +29,7 @@ Medscrape is an open source Python project that takes in a URL, scrapes an entir
 2. Navigate to the project directory:
 
     ```
-    cd medscrape
+    cd backend
     ```
 3. Install Poetry for dependency management:
    ```
